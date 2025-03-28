@@ -8,7 +8,7 @@
       <link href="/2025/03/28/AXI4-lite/"/>
       <url>/2025/03/28/AXI4-lite/</url>
       
-        <content type="html"><![CDATA[<h2 id="AXI"><a href="#AXI" class="headerlink" title="AXI"></a>AXI</h2><p><img src="/2025/03/28/AXI4-lite/5845b56700d47c65d5322881741993cb.png" alt="test"></p>]]></content>
+        <content type="html"><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近需要想办法给CPU接AXI总线，目前先试着看下AXI4-LITE，IFU和ROM已经写好了，开始往LSU和RAM看看</p><h2 id="AXI4-lite"><a href="#AXI4-lite" class="headerlink" title="AXI4-lite"></a>AXI4-lite</h2><h3 id="内部握手信号"><a href="#内部握手信号" class="headerlink" title="内部握手信号"></a>内部握手信号</h3><p><strong>VALID</strong>信号是传输段发送的，<strong>READY</strong>是接收端发送的。只有在<strong>VALID</strong>和<strong>READY</strong>同时有效的时候，信息才会被传递。<strong>VALID</strong>有效代表发送以准备好，<strong>READY</strong>有效代表接收已准备好，当其中一方有效，另一方无效时，有效的一方信号需要保持，等待另一方信号的有效。</p><p>写响应通道要发送<strong>BVALID</strong>和<strong>BRESP</strong>。其中<strong>BVALID</strong>要与主机发过来的<strong>BREADY</strong>进行握手代表写数据结束。<strong>BRESP</strong>为两个bit的信号，作为写数据是否成功的回应</p><p>写模式</p><p><img src="/2025/03/28/AXI4-lite/Blog\blog\source_posts\AXI4-lite\v2-409773b26d0c77c20b9509b385090ccb_r.jpg" alt="5845b56700d47c65d5322881741993cb"></p><p>读模式</p><p><img src="/2025/03/28/AXI4-lite/Blog\blog\source_posts\AXI4-lite\v2-34063f9d75b47c771bd029080cabe9f5_1440w.jpg" alt="v2-34063f9d75b47c771bd029080cabe9f5_1440w"></p>]]></content>
       
       
       <categories>
