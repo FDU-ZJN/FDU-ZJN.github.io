@@ -181,7 +181,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
-<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script async="async">(()=>{
   const $loadingBox = document.getElementById('loading-box')
   const $body = document.body
   const preloader = {
@@ -197,6 +197,7 @@
 
   preloader.initLoading()
   window.addEventListener('load', preloader.endLoading)
+  setTimeout(function(){preloader.endLoading();}, 3000);
 
   if (false) {
     btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
