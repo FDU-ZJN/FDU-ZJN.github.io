@@ -4,7 +4,16 @@
   <url>
     <loc>http://iczjn.com/posts/3740229499.html</loc>
     
-    <lastmod>2025-06-18</lastmod>
+    <lastmod>2025-06-20</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://iczjn.com/posts/1253194412.html</loc>
+    
+    <lastmod>2025-06-20</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -157,7 +166,7 @@
 
   <url>
     <loc>http://iczjn.com/</loc>
-    <lastmod>2025-06-18</lastmod>
+    <lastmod>2025-06-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
