@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://iczjn.com/posts/1253334338.html</loc>
+    
+    <lastmod>2025-11-29</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://iczjn.com/posts/932177725.html</loc>
     
     <lastmod>2025-11-28</lastmod>
@@ -301,7 +310,7 @@
 
   <url>
     <loc>http://iczjn.com/</loc>
-    <lastmod>2025-11-28</lastmod>
+    <lastmod>2025-11-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
