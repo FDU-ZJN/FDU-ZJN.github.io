@@ -1,0 +1,339 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>VBD代码阅读详解 | Cosmos</title><meta name="author" content="ZJN"><meta name="copyright" content="ZJN"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="VBD模型，数据代码阅读详解">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VBD代码阅读详解">
+<meta property="og:url" content="http://iczjn.com/posts/6733346653.html">
+<meta property="og:site_name" content="Cosmos">
+<meta property="og:description" content="VBD模型，数据代码阅读详解">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://iczjn.com/img/cover_27.jpg">
+<meta property="article:published_time" content="2025-11-29T07:25:24.000Z">
+<meta property="article:modified_time" content="2025-11-30T03:00:11.288Z">
+<meta property="article:author" content="ZJN">
+<meta property="article:tag" content="自动驾驶">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://iczjn.com/img/cover_27.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "VBD代码阅读详解",
+  "url": "http://iczjn.com/posts/6733346653.html",
+  "image": "http://iczjn.com/img/cover_27.jpg",
+  "datePublished": "2025-11-29T07:25:24.000Z",
+  "dateModified": "2025-11-30T03:00:11.288Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "ZJN",
+      "url": "http://iczjn.com/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="http://iczjn.com/posts/6733346653.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'VBD代码阅读详解',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script async="async">(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+  setTimeout(function(){preloader.endLoading();}, 3000);
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(/img/background.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "/img/loading.gif" data-lazy-src="/img/head.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">25</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/cover_27.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Cosmos</span></a><a class="nav-page-title" href="/"><span class="site-name">VBD代码阅读详解</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">VBD代码阅读详解</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-11-29T07:25:24.000Z" title="发表于 2025-11-29 15:25:24">2025-11-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-11-30T03:00:11.288Z" title="更新于 2025-11-30 11:00:11">2025-11-30</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/">计算机</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="数据提取"><a class="markdownIt-Anchor" href="#数据提取"></a> 数据提取</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">MAX_NUM_OBJECTS = <span class="number">64</span><span class="comment">#车辆数目</span></span><br><span class="line">MAX_POLYLINES = <span class="number">256</span><span class="comment">#多段线数目</span></span><br><span class="line">MAX_TRAFFIC_LIGHTS = <span class="number">16</span><span class="comment">#交通灯数目</span></span><br><span class="line">CURRENT_INDEX = <span class="number">10</span></span><br><span class="line">NUM_POINTS_POLYLINE = <span class="number">30</span><span class="comment">#线的点数目</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">tf_dataset = dataloader.tf_examples_dataset(</span><br><span class="line">       path=data_dir,</span><br><span class="line">       data_format=DataFormat.TFRECORD,</span><br><span class="line">       preprocess_fn=tf_preprocess,</span><br><span class="line">       repeat=<span class="number">1</span>,</span><br><span class="line">       <span class="comment"># num_shards=16,</span></span><br><span class="line">       deterministic=<span class="literal">True</span>,</span><br><span class="line">   )</span><br></pre></td></tr></table></figure>
+<p>tf_preprocess用于 TensorFlow 数据集的预处理,tf_postprocess用于后处理，在data_utils.py定义</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">tf_preprocess</span>(<span class="params">serialized: <span class="built_in">bytes</span></span>) -&gt; <span class="built_in">dict</span>[<span class="built_in">str</span>, tf.Tensor]:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Preprocesses the serialized data.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">        serialized (bytes): The serialized data.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">        dict[str, tf.Tensor]: The preprocessed data.</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    womd_features = dataloader.womd_utils.get_features_description(</span><br><span class="line">        include_sdc_paths=<span class="literal">False</span>,</span><br><span class="line">        max_num_rg_points=<span class="number">30000</span>,</span><br><span class="line">        num_paths=<span class="literal">None</span>,</span><br><span class="line">        num_points_per_path=<span class="literal">None</span>,</span><br><span class="line">    )</span><br><span class="line">    womd_features[<span class="string">&#x27;scenario/id&#x27;</span>] = tf.io.FixedLenFeature([<span class="number">1</span>], tf.string)</span><br><span class="line"></span><br><span class="line">    deserialized = tf.io.parse_example(serialized, womd_features)</span><br><span class="line">    parsed_id = deserialized.pop(<span class="string">&#x27;scenario/id&#x27;</span>)</span><br><span class="line">    deserialized[<span class="string">&#x27;scenario/id&#x27;</span>] = tf.io.decode_raw(parsed_id, tf.uint8)</span><br><span class="line">    <span class="keyword">return</span> dataloader.preprocess_womd_example(</span><br><span class="line">        deserialized,</span><br><span class="line">        aggregate_timesteps=<span class="literal">True</span>,</span><br><span class="line">        max_num_objects=<span class="literal">None</span>,</span><br><span class="line">    )</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>将原始的序列化数据集样本转换为模型可用的格式化张量字典，为后续的轨迹预测或运动分析模型准备输入数据</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">tf_postprocess</span>(<span class="params">example: <span class="built_in">dict</span>[<span class="built_in">str</span>, tf.Tensor]</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Postprocesses the example.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">        example (dict[str, tf.Tensor]): The example to be postprocessed.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">        tuple: A tuple containing the scenario ID and the postprocessed scenario.</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    scenario = dataloader.simulator_state_from_womd_dict(example)</span><br><span class="line">    scenario_id = example[<span class="string">&#x27;scenario/id&#x27;</span>]</span><br><span class="line">    <span class="keyword">return</span> scenario_id, scenario</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>后处理分离出场景 ID 和 原始场景数据</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> example <span class="keyword">in</span> tf_dataset_iter:</span><br><span class="line">        </span><br><span class="line">        scenario_id_binary, scenario = tf_postprocess(example)</span><br><span class="line">        scenario_id = scenario_id_binary.tobytes().decode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line">        </span><br><span class="line">        scenario_filename = os.path.join(save_dir, <span class="string">&#x27;scenario_&#x27;</span>+scenario_id+<span class="string">&#x27;.pkl&#x27;</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># check if file exists</span></span><br><span class="line">        <span class="keyword">if</span> os.path.exists(scenario_filename):</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> only_raw:</span><br><span class="line">            data_dict = &#123;<span class="string">&#x27;scenario_raw&#x27;</span>: scenario&#125;</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            data_dict = data_process_scenario(</span><br><span class="line">                scenario,</span><br><span class="line">                max_num_objects=MAX_NUM_OBJECTS,</span><br><span class="line">                max_polylines=MAX_POLYLINES,</span><br><span class="line">                current_index=CURRENT_INDEX,</span><br><span class="line">                num_points_polyline=NUM_POINTS_POLYLINE,</span><br><span class="line">            )</span><br><span class="line">            <span class="keyword">if</span> save_raw:</span><br><span class="line">                data_dict[<span class="string">&#x27;scenario_raw&#x27;</span>] = scenario</span><br><span class="line">            </span><br><span class="line">        data_dict[<span class="string">&#x27;scenario_id&#x27;</span>] = scenario_id</span><br><span class="line"></span><br><span class="line">        <span class="keyword">with</span> <span class="built_in">open</span>(scenario_filename, <span class="string">&#x27;wb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">            pickle.dump(data_dict, f)</span><br></pre></td></tr></table></figure>
+<h3 id="data_process_scenario核心场景处理函数"><a class="markdownIt-Anchor" href="#data_process_scenario核心场景处理函数"></a> data_process_scenario——核心场景处理函数</h3>
+<h4 id="智能体"><a class="markdownIt-Anchor" href="#智能体"></a> 智能体</h4>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">(agents_history, agents_future, agents_interested, agents_type, agents_id) = <span class="built_in">data_process_agent</span>(</span><br><span class="line">        scenario,</span><br><span class="line">        max_num_objects = max_num_objects,</span><br><span class="line">        current_index = current_index,</span><br><span class="line">        use_log = use_log,</span><br><span class="line">        selected_agents = selected_agents,</span><br><span class="line">        remove_history=remove_history,</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">agents_history[i] = np.column_stack([</span><br><span class="line">                log_trajectory.xy[a][:current_index+<span class="number">1</span>, <span class="number">0</span>],</span><br><span class="line">                log_trajectory.xy[a][:current_index+<span class="number">1</span>, <span class="number">1</span>],</span><br><span class="line">                log_trajectory.yaw[a][:current_index+<span class="number">1</span>],</span><br><span class="line">                log_trajectory.vel_x[a][:current_index+<span class="number">1</span>],</span><br><span class="line">                log_trajectory.vel_y[a][:current_index+<span class="number">1</span>],</span><br><span class="line">                log_trajectory.length[a][:current_index+<span class="number">1</span>],</span><br><span class="line">                log_trajectory.width[a][:current_index+<span class="number">1</span>],</span><br><span class="line">                log_trajectory.height[a][:current_index+<span class="number">1</span>],</span><br><span class="line">            ])</span><br><span class="line">agents_history[i][~log_trajectory.valid[a, :current_index+<span class="number">1</span>]] = <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<p>历史轨迹(max_objects, history_length, 8)的8个特征：x, y, yaw, vel_x, vel_y, length, width, height</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">agents_future[i] = np.column_stack([</span><br><span class="line">        log_trajectory.xy[a][current_index:, <span class="number">0</span>],</span><br><span class="line">        log_trajectory.xy[a][current_index:, <span class="number">1</span>],</span><br><span class="line">        log_trajectory.yaw[a][current_index:],</span><br><span class="line">        log_trajectory.vel_x[a][current_index:],</span><br><span class="line">        log_trajectory.vel_y[a][current_index:]</span><br><span class="line">    ])</span><br></pre></td></tr></table></figure>
+<p><strong>未来轨迹</strong>(max_objects, future_length, 5)的5个特征x, y, yaw, vel_x, vel_y</p>
+<ul>
+<li>
+<p><code>agents_interested</code>: 智能体关注度（模型化对象=10，其他=1，无效=0）</p>
+</li>
+<li>
+<p><code>agents_type</code>: 智能体类型（车辆、行人等）</p>
+</li>
+<li>
+<p><code>agent_ids</code>: 实际处理的智能体ID列表</p>
+</li>
+<li>
+<p><strong>有效性掩码</strong>: 使用<code>valid</code>标志过滤无效时间步的数据</p>
+</li>
+<li>
+<p><strong>零填充</strong>: 对无效位置用0填充</p>
+</li>
+<li>
+<p><strong>历史清除</strong>: <code>remove_history</code>参数可清除除当前时刻外的所有历史</p>
+</li>
+</ul>
+<p>最后返回</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> (agents_history, agents_future, agents_interested, agents_type, agent_ids)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 假设场景中有23个有效智能体，current_index=10，总时间步=91</span></span><br><span class="line">agents_history.shape    <span class="comment"># (64, 11, 8)   - 前23行有数据，后41行全0</span></span><br><span class="line">agents_future.shape     <span class="comment"># (64, 81, 5)   - 同上</span></span><br><span class="line">agents_interested.shape <span class="comment"># (64,)         - [10,1,1,10,0,0,...] </span></span><br><span class="line">agents_type.shape       <span class="comment"># (64,)         - [1,1,2,1,0,0,...]</span></span><br><span class="line">agent_ids              <span class="comment"># [23, 45, 12, 67, ...] - 长度23的实际ID列表</span></span><br></pre></td></tr></table></figure>
+<p>如果智能体比较少，agents_history，agents_future会形成很大的稀疏矩阵</p>
+<h4 id="交通灯"><a class="markdownIt-Anchor" href="#交通灯"></a> 交通灯</h4>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(traffic_light_points, traffic_lane_ids, traffic_light_states) = <span class="built_in">data_process_traffic_light</span>(</span><br><span class="line">        scenario,</span><br><span class="line">        current_index = current_index,</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">data_process_traffic_light</span>(<span class="params"></span></span><br><span class="line"><span class="params">    scenario,</span></span><br><span class="line"><span class="params">    current_index = <span class="number">10</span>,</span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Process traffic light data from the given scenario.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">        scenario (datatypes.SimulatorState): The simulator state containing traffic light information.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">        tuple: A tuple containing the processed traffic light points, lane IDs, and states.</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    traffic_lights = scenario.log_traffic_light</span><br><span class="line">        </span><br><span class="line">    <span class="comment">############# Get Traffic Lights #############</span></span><br><span class="line">    traffic_lane_ids = np.asarray(traffic_lights.lane_ids)[:, current_index]</span><br><span class="line">    traffic_light_states = np.asarray(traffic_lights.state)[:, current_index]</span><br><span class="line">    traffic_stop_points = np.asarray(traffic_lights.xy)[:, current_index]</span><br><span class="line">    traffic_light_valid = np.asarray(traffic_lights.valid)[:, current_index]</span><br><span class="line">        </span><br><span class="line">    traffic_light_points = np.concatenate([traffic_stop_points, traffic_light_states[:, <span class="literal">None</span>]], axis=<span class="number">1</span>)    </span><br><span class="line">    traffic_light_points = np.float32(traffic_light_points)</span><br><span class="line">    traffic_light_points = np.where(</span><br><span class="line">        traffic_light_valid[:, <span class="literal">None</span>],</span><br><span class="line">        traffic_light_points,</span><br><span class="line">        <span class="number">0.0</span></span><br><span class="line">    )</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">return</span> traffic_light_points, traffic_lane_ids, traffic_light_states</span><br></pre></td></tr></table></figure>
+<p>输出x,y坐标，航道id，交通灯状态</p>
+<h4 id="航点"><a class="markdownIt-Anchor" href="#航点"></a> 航点</h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">roadgraph_points = scenario.roadgraph_points</span><br></pre></td></tr></table></figure>
+<p>不作处理</p>
+<h4 id="道路图"><a class="markdownIt-Anchor" href="#道路图"></a> 道路图</h4>
+<p>从完整的 Waymo 道路图中，只提取与当前场景中<strong>活跃智能体相关</strong>的局部地图。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> a <span class="keyword">in</span> <span class="built_in">range</span>(agents_history.shape[<span class="number">0</span>]):</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> current_valid[a]:</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">    </span><br><span class="line">    agent_position = agents_history[a, -<span class="number">1</span>, :<span class="number">2</span>]</span><br><span class="line">    nearby_roadgraph_points = filter_topk_roadgraph_points(roadgraph_points, agent_position, <span class="number">3000</span>)</span><br><span class="line">    map_ids.append(nearby_roadgraph_points.ids.tolist())</span><br></pre></td></tr></table></figure>
+<p>只为有效的智能体筛选附近的路网点,找到<strong>距离智能体最近的 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">K</span></span></span></span> 个道路图点</strong>（这里 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>3000</mn></mrow><annotation encoding="application/x-tex">K=3000</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">K</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">3</span><span class="mord">0</span><span class="mord">0</span><span class="mord">0</span></span></span></span>),收集所有这些点所属的<strong>地图元素 ID</strong>（即车道、人行横道等的 ID）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sorted_map_ids = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(nearby_roadgraph_points.shape[<span class="number">0</span>]):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(map_ids)):</span><br><span class="line">        <span class="keyword">if</span> map_ids[j][i] != -<span class="number">1</span> <span class="keyword">and</span> map_ids[j][i] <span class="keyword">not</span> <span class="keyword">in</span> sorted_map_ids:</span><br><span class="line">            sorted_map_ids.append(map_ids[j][i])</span><br></pre></td></tr></table></figure>
+<p>去重</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> <span class="built_in">id</span> <span class="keyword">in</span> sorted_map_ids:</span><br><span class="line">    <span class="comment"># get polyline</span></span><br><span class="line">    p_x = roadgraph_points_x[roadgraph_points.ids == <span class="built_in">id</span>]</span><br><span class="line">    p_y = roadgraph_points_y[roadgraph_points.ids == <span class="built_in">id</span>]</span><br><span class="line">    dir_x = roadgraph_points_dir_x[roadgraph_points.ids == <span class="built_in">id</span>]</span><br><span class="line">    dir_y = roadgraph_points_dir_y[roadgraph_points.ids == <span class="built_in">id</span>]</span><br><span class="line">    heading = np.arctan2(dir_y, dir_x)</span><br><span class="line">    lane_type = roadgraph_points_types[roadgraph_points.ids == <span class="built_in">id</span>]</span><br><span class="line">    traffic_light_state = traffic_light_states[traffic_lane_ids == <span class="built_in">id</span>] <span class="keyword">if</span> <span class="built_in">id</span> <span class="keyword">in</span> traffic_lane_ids <span class="keyword">else</span> <span class="number">0</span></span><br><span class="line">    traffic_light_state = np.repeat(traffic_light_state, <span class="built_in">len</span>(p_x))</span><br><span class="line">    polyline = np.stack([p_x, p_y, heading, traffic_light_state, lane_type], axis=<span class="number">1</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># sample points and fill into fixed-size array</span></span><br><span class="line">    polyline_len = polyline.shape[<span class="number">0</span>]</span><br><span class="line">    sampled_points = np.linspace(<span class="number">0</span>, polyline_len-<span class="number">1</span>, num_points_polyline, dtype=np.int32)</span><br><span class="line">    cur_polyline = np.take(polyline, sampled_points, axis=<span class="number">0</span>)</span><br><span class="line">    polylines.append(cur_polyline)</span><br></pre></td></tr></table></figure>
+<p>每条多段线由 5 个特征组成：<strong>(x, y) 坐标、航向角 (heading)、交通灯状态、车道类型</strong>，由于地图元素的实际点数不固定，使用 <code>np.linspace</code> 和 <code>np.take</code> 对其进行均匀采样，以保证每条多段线最终包含固定的 <code>num_points_polyline</code>（例如 30）个点。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="built_in">len</span>(polylines) &gt; <span class="number">0</span>:</span><br><span class="line">    polylines = np.stack(polylines, axis=<span class="number">0</span>)</span><br><span class="line">    polylines_valid = np.ones((polylines.shape[<span class="number">0</span>],), dtype=np.int32)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    polylines = np.zeros((<span class="number">1</span>, num_points_polyline, <span class="number">5</span>), dtype=np.float32)</span><br><span class="line">    polylines_valid = np.zeros((<span class="number">1</span>,), dtype=np.int32)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> polylines.shape[<span class="number">0</span>] &gt;= max_polylines:</span><br><span class="line">    polylines = polylines[:max_polylines]</span><br><span class="line">    polylines_valid = polylines_valid[:max_polylines]</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    polylines = np.pad(polylines, ((<span class="number">0</span>, max_polylines-polylines.shape[<span class="number">0</span>]), (<span class="number">0</span>, <span class="number">0</span>), (<span class="number">0</span>, <span class="number">0</span>)))</span><br><span class="line">    polylines_valid = np.pad(polylines_valid, (<span class="number">0</span>, max_polylines-polylines_valid.shape[<span class="number">0</span>]))</span><br></pre></td></tr></table></figure>
+<p>截断和填充，将polylines固定在[max_polylines, num_points_polyline, 5]</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://iczjn.com">ZJN</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://iczjn.com/posts/6733346653.html">http://iczjn.com/posts/6733346653.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://iczjn.com" target="_blank">Cosmos</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%87%AA%E5%8A%A8%E9%A9%BE%E9%A9%B6/">自动驾驶</a><a class="post-meta__tags" href="/tags/python/">python</a></div><div class="post-share"><div class="social-share" data-image="/img/cover_27.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/1253334338.html" title="gsutil使用技巧指北"><img class="cover" src= "/img/loading.gif" data-lazy-src="/img/cover_26.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">gsutil使用技巧指北</div></div><div class="info-2"><div class="info-item-1">记录一下使用gsutil下载</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/3513325653.html" title="自动驾驶仿真扩散模型-VBD"><img class="cover" src= "/img/loading.gif" data-lazy-src="/img/cover_23.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-24</div><div class="info-item-2">自动驾驶仿真扩散模型-VBD</div></div><div class="info-2"><div class="info-item-1">WOSAC第二名，使用扩散模型</div></div></div></a><a class="pagination-related" href="/posts/3513334553.html" title="自动驾驶行为仿真benchmark-WOSAC"><img class="cover" src= "/img/loading.gif" data-lazy-src="/img/cover_22.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-23</div><div class="info-item-2">自动驾驶行为仿真benchmark-WOSAC</div></div><div class="info-2"><div class="info-item-1">自动驾驶行为仿真现在最主流的benchmark</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "/img/loading.gif" data-lazy-src="/img/head.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">ZJN</div><div class="author-info-description">穷其道者 归处亦同</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">25</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/FDU-ZJN"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">嘟嘟噜</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%8F%90%E5%8F%96"><span class="toc-number">1.</span> <span class="toc-text"> 数据提取</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#data_process_scenario%E6%A0%B8%E5%BF%83%E5%9C%BA%E6%99%AF%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0"><span class="toc-number">1.1.</span> <span class="toc-text"> data_process_scenario——核心场景处理函数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%99%BA%E8%83%BD%E4%BD%93"><span class="toc-number">1.1.1.</span> <span class="toc-text"> 智能体</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%A4%E9%80%9A%E7%81%AF"><span class="toc-number">1.1.2.</span> <span class="toc-text"> 交通灯</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%88%AA%E7%82%B9"><span class="toc-number">1.1.3.</span> <span class="toc-text"> 航点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%81%93%E8%B7%AF%E5%9B%BE"><span class="toc-number">1.1.4.</span> <span class="toc-text"> 道路图</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/6733346653.html" title="VBD代码阅读详解"><img src= "/img/loading.gif" data-lazy-src="/img/cover_27.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="VBD代码阅读详解"/></a><div class="content"><a class="title" href="/posts/6733346653.html" title="VBD代码阅读详解">VBD代码阅读详解</a><time datetime="2025-11-29T07:25:24.000Z" title="发表于 2025-11-29 15:25:24">2025-11-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/1253334338.html" title="gsutil使用技巧指北"><img src= "/img/loading.gif" data-lazy-src="/img/cover_26.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="gsutil使用技巧指北"/></a><div class="content"><a class="title" href="/posts/1253334338.html" title="gsutil使用技巧指北">gsutil使用技巧指北</a><time datetime="2025-11-29T00:50:08.000Z" title="发表于 2025-11-29 08:50:08">2025-11-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/932177725.html" title="hexo-butterfly主题giscus评论"><img src= "/img/loading.gif" data-lazy-src="/img/cover_25.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="hexo-butterfly主题giscus评论"/></a><div class="content"><a class="title" href="/posts/932177725.html" title="hexo-butterfly主题giscus评论">hexo-butterfly主题giscus评论</a><time datetime="2025-11-28T05:25:08.000Z" title="发表于 2025-11-28 13:25:08">2025-11-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3543225653.html" title="开源GPU哪家强"><img src= "/img/loading.gif" data-lazy-src="/img/cover_24.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="开源GPU哪家强"/></a><div class="content"><a class="title" href="/posts/3543225653.html" title="开源GPU哪家强">开源GPU哪家强</a><time datetime="2025-11-26T06:11:39.000Z" title="发表于 2025-11-26 14:11:39">2025-11-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3513325653.html" title="自动驾驶仿真扩散模型-VBD"><img src= "/img/loading.gif" data-lazy-src="/img/cover_23.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="自动驾驶仿真扩散模型-VBD"/></a><div class="content"><a class="title" href="/posts/3513325653.html" title="自动驾驶仿真扩散模型-VBD">自动驾驶仿真扩散模型-VBD</a><time datetime="2025-11-24T10:47:52.000Z" title="发表于 2025-11-24 18:47:52">2025-11-24</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2025 By ZJN</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'FDU-ZJN/blog_comment',
+      'data-repo-id': 'R_kgDOQemcDg',
+      'data-category-id': 'DIC_kwDOQemcDs4CzJof',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !false) {
+    if (false) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><!-- hexo injector body_end start --><script data-pjax src="https://unpkg.com/oh-my-live2d"></script><script>const oml2d = OML2D.loadOml2d({importType:"cubism5",dockedPosition:"right",mobileDisplay:false,models:[{"path":"/live2d_models/ugofficial/ugofficial.model3.json","position":[0,0],"scale":0.25,"stageStyle":{"width":200,"height":230},"mobilePosition":[-20,-10],"mobileScale":0.06,"mobileStageStyle":{"width":150,"height":140},"motionPreloadStrategy":"ALL"}],tips:{style: {"width":200,"height":70,"left":"calc(50% - 20px)","top":"-100px"},mobileStyle: {"width":150,"left":10,"bottom":10,"top":"auto"},idleTips:{interval:3600,message:["BUG DE完了吗~"]}}});</script><!-- hexo injector body_end end --></body></html>
