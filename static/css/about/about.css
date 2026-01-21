@@ -680,7 +680,7 @@ p.p.center, span.p.center {
     transition: 2s ease-in-out;
 }
 .author-content-item.game-yuanshen {
-    background: url(https://img.june-pj.cn/img/2024/01/16/shuimen.jpg) no-repeat top;
+    background: url(https://cdn.jsdelivr.net/gh/FDU-ZJN/Picture/FGO.jpg) no-repeat top;
     background-size: cover;
     min-height: 300px;
     overflow: hidden;
@@ -793,7 +793,7 @@ p.p.center, span.p.center {
 }
 
 .author-content-item.like-music {
-    background: url(https://img.june-pj.cn/img/2024/01/16/Eason.jpg) no-repeat top;
+    background: url(https://cdn.jsdelivr.net/gh/FDU-ZJN/Picture/Aimer.jpg) no-repeat top;
     background-size: cover;
     min-height: 400px;
     color: var(--june-white);
