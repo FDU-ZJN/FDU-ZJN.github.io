@@ -1,0 +1,241 @@
+/* eslint-disable */
+var dict = {
+  切换预览方式: "Switch preview mode",
+  正在加载: "Loading",
+  草料二维码: "cli.im",
+  普通预览: "HD Preview",
+  "65%原文件清晰度，内容基本不错位":
+    "cli.im transcoding optimization, restore the actual typographic style",
+  "当前：普通预览": "Current: HD Preview",
+  高级预览: "Ultra HD Preview",
+  "100%原文件清晰度，完全还原文件格式":
+    "High resolution mode, switchable after transcoding is completed",
+  微信原生预览: "WeChat Preview",
+  "微信自带的预览功能，部分内容可能错位":
+    "WeChat native preview, some content may be misplaced",
+  正在打开文件: "Opening file",
+  文件转码中: "Transcoding files",
+  "文件体积较大或分辨率较高，请稍后": "File size is large or resolution is high, please wait",
+  "文档页数过多、页面太大或文件本身已损坏，可尝试用微信原生预览方式查看":
+    "Excessive number of documents, too large pages, or damaged the file itself, you can try to check the default preview method of WeChat",
+  加密文档无法查看: "Encrypted documents cannot be viewed",
+  文件格式不支持普通预览: "File format does not support Ultra HD preview",
+  切换成功: "Switching successful",
+  正在切换普通预览: "Switching to HD preview",
+  正在切换超清预览: "Switching to Ultra HD preview",
+  "双指张合滑动，缩放内容": "Pinch with two fingers to zoom",
+  已完成阅后登记: "Completed reading registration",
+  "浏览 $v 秒后将自动完成阅后登记":
+    "The reading will be completed after viewing $v seconds",
+  登记失败: "Registration failed",
+  正在登记: "Registering",
+  无法打开文档: "Cannot open this document",
+  关闭: "Close",
+  提供文件预览功能: "provides file preview function",
+  了解更多: "know more",
+  文件已开始下载: "The file has started downloading",
+  "未下载成功？": "Failed to download ?",
+  重新下载: "Re-download",
+  "文件已保存到服务器，请选择下载方式":
+    "File has been saved to server, please select download method",
+  下载到手机: "Download to phone",
+  传输到电脑: "Transfer to computer",
+  在电脑浏览器输入网址: "Enter URL in computer browser",
+  "点击下方扫码按钮，扫描电脑上的二维码":
+    "Click the scan button below to scan QR code on computer",
+  "选择要上传的文件，传输文件到电脑":
+    "Select files to upload and transfer to computer",
+  使用指南: "User Guide",
+  扫描二维码: "Scan QR code",
+  点击下方按钮: "Click button below",
+  复制: "Copy",
+  文件下载链接: "File download link",
+  打开: "Open",
+  浏览器: "Browser",
+  "访问，即可下载": "to download",
+  "Safari 浏览器": "Safari browser",
+  "下载完成后，在浏览器": "After download completes, in browser",
+  右上角: "upper right corner",
+  找到文件: "find file",
+  "下载完成后，可在": "After download completes, in",
+  下载管理: "download manager",
+  中找到文件: "find file",
+  点击: "Click",
+  分享按钮: "share button",
+  "，可储存到文件": ", save to files",
+  下载文件: "Download file",
+  电脑浏览器下载: "Download in computer browser",
+  "草料二维码提供技术服务，": "Powered by cli.im,",
+  常见问题: "FAQ",
+  链接已复制: "Link copied",
+  文件下载: "File Download",
+  复制链接: "Copy Link",
+  点击按钮: "Click button",
+  "点击右上角「···」，选择": "Click '···' in the upper right corner and select",
+  在Safari中打开: "Open in Safari",
+  "文件已失效": "File has expired",
+  "文件已被删除，无法下载": "File has been deleted, cannot be downloaded",
+  "文件不允许下载": "File is not allowed to download",
+  "二维码制作者已设置了「不允许扫码下载文件」": "The QR code creator has set \"Do not allow scanning to download files\"",
+  "已传输到电脑": "Transmitted to computer",
+  "请在电脑上查看": "Please check on the computer",
+  "你还可以用微信扫一扫": "You can also use WeChat scan",
+  "把手机、微信中的文件传输至电脑": "Transfer files from mobile phones and WeChat to computer",
+  "了解更多": "Learn more",
+  "常见问题": "FAQ",
+  "完成": "Complete",
+  "前往微信小程序": "Go to WeChat mini program",
+  "H5 暂不支持直接下载，请前往微信小程序打开后，进行传输": "H5 does not support direct download, please open in WeChat mini program and transfer",
+  "请点击右上角「...」，进行分享": "Tap top right 「…」to share",
+  "了解详情": "View details",
+  "仅支持在微信小程序中进行收藏": "This QR code can only be saved within the WeChat Mini Program",
+  "https://qr61.cn/o2eikt/qTMWkl4": "https://qr61.cn/o2eikt/qTtpX0M",
+};
+
+function isChinese() {
+  if (/lang=en/.test(window.location.search)) {
+    return false;
+  }
+  return navigator.language === "zh-CN" || navigator.language === "zh";
+}
+
+function translate(text) {
+  if (isChinese()) return text;
+  return dict[text] || text;
+}
+
+function write(text, t) {
+  t = t || true;
+  document.write(t ? translate(text) : text);
+}
+
+window.$toast = function (str, noWrap, center) {
+  var el = $("<div>" + str + "</div>");
+
+  el.css({
+    backgroundColor: "rgba(0, 0, 0, .7)",
+    color: "#fff",
+    position: "fixed",
+    zIndex: "999",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    padding: "8px 12px",
+    fontSize: "14px",
+    borderRadius: "2px",
+    transition: ".4s ease",
+    opacity: "0",
+  });
+
+  if (noWrap) {
+    el.css("white-space", "nowrap");
+  }
+
+  if (center) {
+    el.css("text-align", "center");
+  }
+
+  $("body").append(el);
+
+  setTimeout(function () {
+    el.css("opacity", "1");
+  });
+
+  setTimeout(function () {
+    el.css("opacity", "0");
+
+    setTimeout(function () {
+      el.remove();
+    }, 400);
+  }, 3500);
+};
+
+window.$modal = function (title, content, okText) {
+  var el = $(
+    [
+      '<div class="__modal-wrap" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, .6); z-index: 100;">',
+      '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; border-radius: 4px; background: white; width: 290px;">',
+      '<div style="text-align: center; padding: 24px 16px; padding-bottom: 0; font-size: 16px; font-weight: 700;">',
+      title,
+      "</div>",
+      '<div style="padding: 24px 16px; padding-top: 12px; font-size: 14px;text-align: center;">',
+      content,
+      "</div>",
+      '<div class="__modal-ok" style="border-top: 1px solid rgba(120, 130, 140, 0.13); height: 52px; text-align: center; color: #4caf50; font-weight: 700; line-height: 52px; font-size: 14px;">',
+      okText,
+      "</div>",
+      "</div>",
+      "</div>",
+    ].join("")
+  );
+
+  $("body").append(el);
+
+  el.find(".__modal-ok").click(function () {
+    el.remove();
+  });
+
+  el.click(function (e) {
+    if ($(e.target).hasClass("__modal-wrap")) {
+      el.remove();
+    }
+  });
+};
+
+(function () {
+  function handleFontSize() {
+    WeixinJSBridge.invoke("setFontSizeCallback&", { fontSize: 0 });
+    WeixinJSBridge.on("menu:setfont", function () {
+      WeixinJSBridge.invoke("setFontSizeCallback", { "fontSize&": 0 });
+    });
+  }
+  if (
+    typeof WeixinJSBridge == "object" &&
+    typeof WeixinJSBridge.invoke == "function"
+  ) {
+    handleFontSize();
+  } else {
+    document.addEventListener("WeixinJSBridgeReady", handleFontSize, false);
+  }
+})();
+
+// 禁止分享和下载
+document.addEventListener('DOMContentLoaded', function () {
+  function hideMenuItems() {
+    var queries = (function() {
+      var search = window.location.search.split('?')[1].split('&');
+      var queries = {};
+      search.forEach(function(item) {
+        var [key, value] = item.split('=');
+        queries[key] = value;
+      });
+      return queries;
+    })();
+    if (+queries.show_share !== 1) {
+      wx.hideMenuItems({
+        menuList: [
+          'menuItem:share:appMessage',
+          'menuItem:share:wechat',
+          'menuItem:share:timeline',
+          'menuItem:share:qq',
+          'menuItem:share:weiboApp',
+          'menuItem:share:facebook',
+          'menuItem:share:QZone',
+        ],
+      });
+    }
+    if (+queries.download !== 1) {
+      wx.hideMenuItems({
+        menuList: [
+          "menuItem:copyUrl",
+          "menuItem:openWithSafari",
+          "menuItem:originPage",
+          'menuItem:favorite',
+        ]
+      });
+    }
+  }
+  wx.ready(function() {
+    hideMenuItems();
+  });
+});
