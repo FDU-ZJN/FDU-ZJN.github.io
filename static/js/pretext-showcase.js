@@ -2,9 +2,9 @@ import { prepareWithSegments, layoutNextLine } from 'https://esm.sh/@chenglou/pr
 
 const stage = document.getElementById('ptx-stage')
 const textLayer = document.getElementById('ptx-text-layer')
-const orbLayer = document.getElementById('ptx-orb-layer')
+const gif = document.getElementById('ptx-gif')
 
-if (stage && textLayer && orbLayer) {
+if (stage && textLayer && gif) {
   const STORY = [
     'The web still renders paragraphs like static print: measure, break lines, position each row, and pay the layout tax again and again.',
     'That flow works for documents, but interactive interfaces need text that reacts as quickly as touch, drag, and motion.',
@@ -12,13 +12,6 @@ if (stage && textLayer && orbLayer) {
     'In this scene, every glowing orb pushes the paragraph away. Move your cursor and the text reroutes in real time, as if words were fluid around gravity wells.',
     'The point is not decoration. It is control: virtualized feeds, stable scroll anchoring, editor overlays, and cinematic layouts that remain predictable at 60fps.'
   ].join(' ')
-
-  const orbPalette = [
-    'rgba(251, 191, 36, 0.44)',
-    'rgba(34, 211, 238, 0.38)',
-    'rgba(167, 139, 250, 0.35)',
-    'rgba(251, 113, 133, 0.33)'
-  ]
 
   const state = {
     prepared: null,
@@ -28,7 +21,15 @@ if (stage && textLayer && orbLayer) {
     textWidth: 0,
     rafId: 0,
     linePool: [],
-    orbs: [],
+    gifMaskReadable: true,
+    gifCanvas: document.createElement('canvas'),
+    gifCtx: null,
+    gifBox: {
+      x: 0,
+      y: 0,
+      w: 0,
+      h: 0
+    },
     pointer: {
       active: false,
       x: 0,
@@ -40,22 +41,7 @@ if (stage && textLayer && orbLayer) {
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value))
 
-  const makeOrb = (config) => {
-    const el = document.createElement('div')
-    el.className = 'ptx-orb'
-    el.style.background = config.color
-    el.style.width = `${config.r * 2}px`
-    el.style.height = `${config.r * 2}px`
-    orbLayer.appendChild(el)
-
-    return {
-      ...config,
-      el,
-      x: config.x,
-      y: config.y,
-      t: Math.random() * Math.PI * 2
-    }
-  }
+  state.gifCtx = state.gifCanvas.getContext('2d', { willReadFrequently: true })
 
   const syncTypography = () => {
     const stageWidth = stage.clientWidth
@@ -66,6 +52,8 @@ if (stage && textLayer && orbLayer) {
     state.prepared = prepareWithSegments(STORY, state.font)
     textLayer.style.font = state.font
     textLayer.style.lineHeight = `${state.lineHeight}px`
+    const gifW = clamp(Math.round(stageWidth * 0.2), 170, 290)
+    gif.style.width = `${gifW}px`
   }
 
   const mergeIntervals = (intervals) => {
@@ -86,17 +74,52 @@ if (stage && textLayer && orbLayer) {
     return merged
   }
 
-  const findBestGap = (yCenter, left, right) => {
+  const getMaskedIntervals = (yCenter, left, right) => {
     const intervals = []
+    const y = Math.round(yCenter)
+    const { x, y: gifY, w, h } = state.gifBox
 
-    for (let i = 0; i < state.orbs.length; i += 1) {
-      const orb = state.orbs[i]
-      const dy = Math.abs(yCenter - orb.y)
-      const blockR = orb.r + 8
-      if (dy >= blockR) continue
-      const dx = Math.sqrt(blockR * blockR - dy * dy)
-      intervals.push([orb.x - dx, orb.x + dx])
+    if (y < gifY || y >= gifY + h || w <= 0 || h <= 0) return intervals
+
+    const localY = y - gifY
+    const startX = Math.max(Math.floor(left), x)
+    const endX = Math.min(Math.ceil(right), x + w)
+
+    if (endX <= startX) return intervals
+
+    if (!state.gifMaskReadable || !state.gifCtx) {
+      intervals.push([x, x + w])
+      return intervals
     }
+
+    try {
+      const scan = state.gifCtx.getImageData(startX - x, localY, endX - startX, 1).data
+      const alphaThreshold = 22
+      const padding = 14
+      let runStart = -1
+
+      for (let i = 0; i < scan.length; i += 4) {
+        const alpha = scan[i + 3]
+        const px = startX + i / 4
+        if (alpha > alphaThreshold) {
+          if (runStart < 0) runStart = px
+        } else if (runStart >= 0) {
+          intervals.push([runStart - padding, px + padding])
+          runStart = -1
+        }
+      }
+
+      if (runStart >= 0) intervals.push([runStart - padding, endX + padding])
+    } catch {
+      state.gifMaskReadable = false
+      intervals.push([x, x + w])
+    }
+
+    return intervals
+  }
+
+  const getAvailableGaps = (yCenter, left, right) => {
+    const intervals = getMaskedIntervals(yCenter, left, right)
 
     const merged = mergeIntervals(intervals)
     const gaps = []
@@ -110,14 +133,7 @@ if (stage && textLayer && orbLayer) {
     }
 
     if (cursor < right) gaps.push([cursor, right])
-    if (gaps.length === 0) return null
-
-    let best = gaps[0]
-    for (let i = 1; i < gaps.length; i += 1) {
-      if (gaps[i][1] - gaps[i][0] > best[1] - best[0]) best = gaps[i]
-    }
-
-    return best
+    return gaps
   }
 
   const ensureLinePool = (count) => {
@@ -138,7 +154,7 @@ if (stage && textLayer && orbLayer) {
     const right = left + state.textWidth
     const top = 20
     const bottom = stageHeight - 24
-    const minWidth = Math.max(state.fontSize * 4, 140)
+    const minGapWidth = Math.max(state.fontSize * 1.25, 34)
 
     let y = top
     let lineCount = 0
@@ -147,21 +163,40 @@ if (stage && textLayer && orbLayer) {
 
     while (y < bottom && lineCount < 280) {
       const yCenter = y + state.lineHeight * 0.5
-      const bestGap = findBestGap(yCenter, left, right)
+      const gaps = getAvailableGaps(yCenter, left, right)
 
-      if (!bestGap || bestGap[1] - bestGap[0] < minWidth) {
+      if (gaps.length === 0) {
         y += state.lineHeight
         lineCount += 1
         continue
       }
 
-      const maxWidth = Math.floor(bestGap[1] - bestGap[0] - 6)
-      const line = layoutNextLine(state.prepared, cursor, maxWidth)
-      if (!line) break
+      let placedOnRow = false
 
-      const x = Math.round(bestGap[0] + 2)
-      lines.push({ x, y, text: line.text })
-      cursor = line.end
+      for (let i = 0; i < gaps.length; i += 1) {
+        const gap = gaps[i]
+        const gapWidth = gap[1] - gap[0]
+        if (gapWidth < minGapWidth) continue
+
+        const maxWidth = Math.floor(gapWidth - 6)
+        const line = layoutNextLine(state.prepared, cursor, maxWidth)
+        if (!line) {
+          y = bottom
+          break
+        }
+
+        const x = Math.round(gap[0] + 2)
+        lines.push({ x, y, text: line.text })
+        cursor = line.end
+        placedOnRow = true
+      }
+
+      if (!placedOnRow) {
+        y += state.lineHeight
+        lineCount += 1
+        continue
+      }
+
       y += state.lineHeight
       lineCount += 1
     }
@@ -182,54 +217,59 @@ if (stage && textLayer && orbLayer) {
     }
   }
 
-  const updateOrbs = (time) => {
+  const updateGifMask = () => {
+    const w = Math.max(Math.round(state.gifBox.w), 1)
+    const h = Math.max(Math.round(state.gifBox.h), 1)
+
+    if (!state.gifCtx) return
+    if (state.gifCanvas.width !== w) state.gifCanvas.width = w
+    if (state.gifCanvas.height !== h) state.gifCanvas.height = h
+
+    state.gifCtx.clearRect(0, 0, w, h)
+    try {
+      state.gifCtx.drawImage(gif, 0, 0, w, h)
+    } catch {
+      state.gifMaskReadable = false
+    }
+  }
+
+  const updateGif = (time) => {
     const w = stage.clientWidth
     const h = stage.clientHeight
 
     state.pointer.x += (state.pointer.targetX - state.pointer.x) * 0.16
     state.pointer.y += (state.pointer.targetY - state.pointer.y) * 0.16
 
-    for (let i = 0; i < state.orbs.length; i += 1) {
-      const orb = state.orbs[i]
+    const gifRect = gif.getBoundingClientRect()
+    const gifW = Math.max(gifRect.width, 1)
+    const gifH = Math.max(gifRect.height, 1)
+    const floatX = Math.sin(time * 0.0016) * 6
+    const floatY = Math.cos(time * 0.0013) * 4
 
-      if (orb.type === 'cursor') {
-        const fallbackX = w * 0.75
-        const fallbackY = h * 0.52
-        orb.x = state.pointer.active ? state.pointer.x : fallbackX
-        orb.y = state.pointer.active ? state.pointer.y : fallbackY
-        const pulse = 1 + Math.sin(time * 0.004) * 0.06
-        orb.el.style.transform = `translate3d(${orb.x - orb.r}px, ${orb.y - orb.r}px, 0) scale(${pulse})`
-        orb.el.style.opacity = state.pointer.active ? '1' : '0.72'
-        continue
-      }
+    const fallbackX = w * 0.74
+    const fallbackY = h * 0.52
+    const targetX = state.pointer.active ? state.pointer.x : fallbackX
+    const targetY = state.pointer.active ? state.pointer.y : fallbackY
 
-      orb.t += 0.012
-      orb.x += orb.vx
-      orb.y += orb.vy
-      orb.y += Math.sin(orb.t + i) * 0.24
+    const centerX = clamp(targetX + floatX, gifW * 0.45, w - gifW * 0.45)
+    const centerY = clamp(targetY + floatY, gifH * 0.45, h - gifH * 0.45)
 
-      if (orb.x < orb.r + 26 || orb.x > w - orb.r - 26) orb.vx *= -1
-      if (orb.y < orb.r + 20 || orb.y > h - orb.r - 20) orb.vy *= -1
+    state.gifBox.x = Math.round(centerX - gifW * 0.5)
+    state.gifBox.y = Math.round(centerY - gifH * 0.5)
+    state.gifBox.w = Math.round(gifW)
+    state.gifBox.h = Math.round(gifH)
 
-      orb.el.style.transform = `translate3d(${orb.x - orb.r}px, ${orb.y - orb.r}px, 0)`
-    }
+    gif.style.transform = `translate3d(${state.gifBox.x}px, ${state.gifBox.y}px, 0)`
+    gif.style.opacity = state.pointer.active ? '1' : '0.88'
+    gif.style.filter = `drop-shadow(0 14px 24px rgba(7, 10, 25, 0.48)) hue-rotate(${Math.sin(time * 0.0007) * 3}deg)`
+
+    updateGifMask()
   }
 
   const frame = (time) => {
-    updateOrbs(time)
+    updateGif(time)
     renderTextFlow()
     state.rafId = requestAnimationFrame(frame)
-  }
-
-  const buildScene = () => {
-    orbLayer.innerHTML = ''
-    state.orbs = [
-      makeOrb({ x: stage.clientWidth * 0.74, y: stage.clientHeight * 0.24, r: 116, vx: 0.44, vy: 0.28, color: orbPalette[0], type: 'float' }),
-      makeOrb({ x: stage.clientWidth * 0.86, y: stage.clientHeight * 0.37, r: 88, vx: -0.38, vy: 0.31, color: orbPalette[1], type: 'float' }),
-      makeOrb({ x: stage.clientWidth * 0.8, y: stage.clientHeight * 0.54, r: 94, vx: 0.35, vy: -0.24, color: orbPalette[2], type: 'float' }),
-      makeOrb({ x: stage.clientWidth * 0.68, y: stage.clientHeight * 0.72, r: 68, vx: 0.3, vy: 0.34, color: orbPalette[3], type: 'float' }),
-      makeOrb({ x: stage.clientWidth * 0.76, y: stage.clientHeight * 0.5, r: 104, vx: 0, vy: 0, color: 'rgba(147, 197, 253, 0.24)', type: 'cursor' })
-    ]
   }
 
   const onPointerMove = (event) => {
@@ -247,14 +287,27 @@ if (stage && textLayer && orbLayer) {
 
   window.addEventListener('resize', () => {
     syncTypography()
-    buildScene()
   })
 
   syncTypography()
-  buildScene()
+  state.gifMaskReadable = true
+  updateGifMask()
   state.pointer.targetX = stage.clientWidth * 0.74
   state.pointer.targetY = stage.clientHeight * 0.5
   state.pointer.x = state.pointer.targetX
   state.pointer.y = state.pointer.targetY
-  state.rafId = requestAnimationFrame(frame)
+
+  if (gif.complete) {
+    updateGifMask()
+    state.rafId = requestAnimationFrame(frame)
+  } else {
+    gif.addEventListener('load', () => {
+      state.gifMaskReadable = true
+      updateGifMask()
+      if (!state.rafId) state.rafId = requestAnimationFrame(frame)
+    }, { once: true })
+    gif.addEventListener('error', () => {
+      if (!state.rafId) state.rafId = requestAnimationFrame(frame)
+    }, { once: true })
+  }
 }

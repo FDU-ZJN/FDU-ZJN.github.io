@@ -86,7 +86,7 @@
   box-shadow: 0 20px 70px rgba(2, 6, 23, 0.46), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
 }
 
-.ptx-orb-layer,
+.ptx-gif-layer,
 .ptx-text-layer,
 .ptx-vignette {
   position: absolute;
@@ -107,6 +107,23 @@
   color: rgba(244, 242, 236, 0.96);
 }
 
+.ptx-gif-layer {
+  z-index: 1;
+  pointer-events: none;
+}
+
+.ptx-gif {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: clamp(170px, 21vw, 290px);
+  height: auto;
+  user-select: none;
+  will-change: transform;
+  filter: drop-shadow(0 16px 30px rgba(7, 10, 25, 0.48));
+  transform: translate3d(-9999px, -9999px, 0);
+}
+
 .ptx-line {
   position: absolute;
   left: 0;
@@ -116,19 +133,6 @@
   will-change: transform;
   text-shadow: 0 0 10px rgba(15, 23, 42, 0.4);
   transition: opacity 140ms ease;
-}
-
-.ptx-orb-layer {
-  z-index: 1;
-  pointer-events: none;
-  filter: blur(0.2px);
-}
-
-.ptx-orb {
-  position: absolute;
-  border-radius: 999px;
-  filter: blur(14px) saturate(118%);
-  box-shadow: 0 0 40px rgba(125, 211, 252, 0.15), inset 0 0 40px rgba(255, 255, 255, 0.11);
 }
 
 @media (max-width: 1024px) {
