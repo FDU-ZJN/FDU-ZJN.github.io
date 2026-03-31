@@ -12,4 +12,4 @@ Disallow: /fonts/
 Disallow: /vendors/
 Disallow: /fancybox/
 
-Sitemap: http://iczjn.com/sitemap.xml
+Sitemap: http://iczjn.top/sitemap.xml
