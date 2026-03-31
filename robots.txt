@@ -12,4 +12,4 @@ Disallow: /fonts/
 Disallow: /vendors/
 Disallow: /fancybox/
 
-Sitemap: https://fdu-zjn.github.io/sitemap.xml
+Sitemap: https://FDU-ZJN.github.io/sitemap.xml
